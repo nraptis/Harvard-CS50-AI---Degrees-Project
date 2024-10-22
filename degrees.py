@@ -52,28 +52,19 @@ def load_data(directory):
 
 
 def main():
-
+    if len(sys.argv) > 2:
+        sys.exit("Usage: python degrees.py [directory]")
     directory = sys.argv[1] if len(sys.argv) == 2 else "large"
-
-    print("argz ", sys.argv)
 
     # Load data from files into memory
     print("Loading data...")
     load_data(directory)
     print("Data loaded.")
 
-    #source = person_id_for_name(input("Name: "))
-    source = person_id_for_name(sys.argv[2])
-
+    source = person_id_for_name(input("Name: "))
     if source is None:
         sys.exit("Person not found.")
-    #target = person_id_for_name(input("Name: "))
-    target = person_id_for_name(sys.argv[3])
-
-    print("Using this data source: ", directory)
-    print("Using this Person A: ", sys.argv[2])
-    print("Using this Person B: ", sys.argv[3])
-    
+    target = person_id_for_name(input("Name: "))
     if target is None:
         sys.exit("Person not found.")
 
@@ -130,30 +121,30 @@ def shortest_path(source, target):
     visited_person_id_set = set()
     visited_person_id_set.add(source)
 
-    print("AAA, AAA, AAA")
     while frontier.empty() == False:
         popped_node = frontier.remove()
-        print("BBB, BBB, BBB, Popped node is ", popped_node)
+        if popped_node.person_id == target:
+            path = []
+            node = popped_node
+            while node and node.movie_id:
+                path.append((node.movie_id, node.person_id))
+                node = node.parent
+            path.reverse()
+            return path
+
 
         neighbors = neighbors_for_person(popped_node.person_id)
-        print("neighbors = ", neighbors)
 
         for neighbor in neighbors:
             neighbor_person_id = neighbor[1]
             neighbor_movie_id = neighbor[0]
 
-            print("neighbor_person_id = ", neighbor_person_id)
-            print("neighbor_movie_id = ", neighbor_movie_id)
-            
-    
+            if neighbor_person_id not in visited_person_id_set:
+                visited_person_id_set.add(neighbor_person_id)
+                new_node = PathNode(neighbor_person_id, movie_id=neighbor_movie_id, parent=popped_node)
+                frontier.add(new_node)
 
-
-    print(people[source])
-    print(people[target])
-    
-
-
-    return [("93779", "914612"), ("112384", "1697")]
+    return None
 
 '''
 class StackFrontier():
